@@ -1,0 +1,249 @@
+.container {
+    width: 100%;
+    height: 100vh;
+    background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url(https://nevadm.ru/media/project_mo_600/71/42/ae/d4/c0/ca/image.jpg);
+    background-position: center;
+    background-size: cover;
+    padding-left: 8%;
+    padding-right: 8%;
+    box-sizing: border-box;
+}
+.open{
+    display: flex  !important;
+}
+
+.navbar {
+    height: 12%;
+    display: flex;
+    align-items: center;
+
+}
+
+.logo {
+    width: 60px;
+    cursor: pointer;
+    border-radius: 100%
+}
+
+.menu-icon {
+    width: 40px;
+    cursor: pointer;
+    border-radius: 100%;
+}
+
+nav {
+    flex: 1;
+    text-align: right;
+
+}
+
+nav ul li {
+    list-style: none;
+    display: inline-block;
+    margin-left: 60px;
+    padding-right: 30px;
+}
+
+nav ul li a {
+    text-decoration: none;
+    color: aliceblue;
+    font-size: 23px;
+}
+.inter{
+    display:flex;
+    position: relative;
+    z-index: 50;
+    align-items: center;
+    justify-content: center;
+    width: 23px;
+    height: 17px;
+}
+.inter span{
+    height: 2px;
+    width: 80%;
+    transform: scale(1);
+    background-color: white;
+}
+.inter::before,.inter:after{
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 2px;
+    background-color: white;
+}
+.inter:after{top: 0;}
+.inter::before{bottom: 0;}
+
+
+.row {
+    display: flex;
+    height: 88%;
+    align-items: center;
+}
+
+.col {
+    flex-basis: 50%;
+}
+
+h1 {
+    color: aliceblue;
+    font-size: 100px;
+}
+
+p {
+    color: aliceblue;
+    font-size: 11px;
+    line-height: 15px;
+}
+
+button {
+    width: 180px;
+    color: black;
+    font-size: 12px;
+    padding: 12px 0;
+    background-color: rgb(131, 33, 33);
+  
+    border: 0;
+    border-radius: 20px;
+    outline: none;
+    margin-top: 30px;
+    transition: all 0.5 ease;
+}
+button:hover{
+background-color: rgb(252, 5, 5);
+color: white;
+transform: scale(1.05);
+}
+
+.card {
+    width: 200px;
+    height: 230px;
+    display: inline-block;
+    border-radius: 10px;
+    padding: 15px 25px;
+    box-sizing: border-box;
+    cursor: pointer;
+    margin: 10px 15px;
+    background-image: url(https://www.pushengage.com/wp-content/uploads/2023/07/main.png);
+    background-position: center;
+    background-size: cover;
+    transition: transform 0.5s;
+}
+
+.card1 {
+    background-image: url(https://eventmarket.ru/wp-content/uploads/2017/04/Navyiki-i-umeniya-professionalnogo-ofitsianta.-CHto-vazhno-znat-o-rabote-ofitsianta1.jpg);
+}
+
+.card2 {
+    background-image: url(https://modulkassa.ru/blog/cockpit/storage/uploads/2019/03/04/5c7d994f51c74Modulkassa-786.jpg);
+    
+}
+
+.card3 {
+    background-image: url(https://culinaryschool.ru/wp-content/uploads/2017/12/rabota-shef-povarom-fakti-raboti.jpg);
+}
+
+.card4 {
+    background-image: url(https://tkproekt.by/upload/iblock/bb5/bb505492692fbddecfcf436efd1fecd2.jpg);
+}
+.card5{
+    background-image: url(https://www.iksystems.ru/upload/iblock/9a9/umg901z5pv2ayxmrhvlow6r01t7bid2g.jpg);
+}
+.card6{
+    background-image: url(https://cdnn21.img.ria.ru/images/148340/76/1483407615_0:386:7360:4526_1920x0_80_0_0_4b79d84e9845751ddc1cc81d6da2220a.jpg);
+}
+.card6{
+    position: absolute;
+}
+
+.card:hover {
+    transform: translateY(-10px);
+}
+
+h5 {
+    color: rgb(226, 29, 15);
+    text-shadow: 0 0 5px;
+}
+
+.card p {
+    text-shadow: 0 0 15px black;
+    font-size: 8px;
+}
+
+
+
+
+/* nav ul {
+    list-style: none;
+    padding: 0;
+    background: #50ad44;
+    display: flex;
+    justify-content: center;
+}
+
+nav ul li {
+    margin: 0 1rem;
+}
+
+nav ul li a {
+    color: white;
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    display: block;
+}
+
+nav ul li a:hover {
+    background: #06e43e;
+} */
+
+body{
+    background-color: dimgray;
+}
+section {
+    padding: 2rem;
+    text-align: center;
+}
+section h2{
+    font-size: 40px;
+}
+
+.destination {
+    display: inline-block;
+    margin: 1rem;
+    cursor: pointer;
+    font-size: 25px;
+
+}
+
+
+.destination img {
+    width: 500px;
+    height: 350px;
+    background-size: cover;
+    background-position: center;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+form label {
+    margin-top: 1rem;
+}
+
+form input, form select, form button {
+    margin-top: 0.5rem;
+    padding: 0.5rem;
+    width: 200px;
+}
+
+footer {
+    background: #333;
+    color: white;
+    text-align: center;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+}

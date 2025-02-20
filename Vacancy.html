@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ваканции</title>
+    <link rel="stylesheet" href="Vacancy.css">
+</head>
+<body>
+    <div class="container">
+        <div class="navbar">
+            <img src="https://anglerspb.ru/wp-content/uploads/2023/02/%D0%B2%D0%B0%D0%BA%D0%B0%D0%BD%D1%81%D0%B8%D1%8F.png" alt=""
+                class="logo">
+            <nav>
+                <ul>
+                    <li><a href="">Home</a></li>
+                    <li><a href="">About</a></li>
+                    <li><a href="">Region</a></li>
+                    <li><a href="">Services</a></li>
+                    <li><a href="">Contacts</a></li>
+                </ul>
+            </nav>
+                <div class="inter active">
+                    <span></span>
+                </div>
+             
+        </div>
+        <div class="row">
+            <div class="col">
+                <h1>ВАКАНЦИИ</h1>
+                <p style="font-size: 20px;">Вакансия — это свободное рабочее место, на которое отбирают кандидатов. Другое значение слова «вакансия» — объявление о поиске кадров. О нем мы и расскажем в статье.</p>
+                <button type="button">Кнопка</button>
+            </div>
+            <div class="col">
+                <div class="card card1">
+                    <a href=""><h5>Официант</h5></a>
+                 
+
+                </div>
+                <div class="card card2">
+                    <a href=""><h5>Касса</h5></a>
+                 
+
+                </div>
+                <div class="card card3">
+                    <a href=""><h5>Повар</h5></a>
+             
+
+                </div>
+                <div class="card card4">
+                    <a href=""><h5>Уборщица</h5></a>
+                
+                </div>
+                <div class="card card5">
+                    <a href=""><h5>Менеджмент</h5></a>
+               
+
+                </div>
+                <div class=" card card6">
+                    <a href="">><h5>Праграмист</h5></a>
+   
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+
+
+
+    <section id="destinations">
+        <h2>ЖУМУШТАР</h2>
+        <div class="destination" onclick="showDetails('paris')">
+            <img src=https://ss.sport-express.ru/userfiles/materials/196/1968714/full.jpg alt="powar">
+            <h3>Повар</h3>
+        </div>
+        <div class="destination" onclick="showDetails('hawaii')">
+            <img src=https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTAKK8d1z6hGDelRaf_P79VjTV3Lm0N-ALFd_uHbtEtZQ&s alt="ofis">
+            <h3>Официант</h3>
+        </div>
+        <div class="destination" onclick="showDetails('tokyo')">
+            <img src=https://modulkassa.ru/blog/cockpit/storage/uploads/2019/03/04/5c7d994f51c74Modulkassa-786.jpg alt="kassa">
+            <h3>Касса</h3>
+        </div>
+        <div class="destination" onclick="showDetails('tokyo')">
+            <img src=https://www.gen-el.ru/upload/iblock/6b3/6b31d05a4efac39a7a0a49eccc61a3c9.jpg alt="kassa">
+            <h3>Уборщик</h3>
+        </div>
+        <div class="destination" onclick="showDetails('tokyo')">
+            <img src=https://cargofy.ua/storage/2-g68ohs.jpg alt="kassa">
+            <h3>Диспетчер</h3>
+        </div>
+        <div class="destination" onclick="showDetails('tokyo')">
+            <img src=https://s1.stc.all.kpcdn.net/putevoditel/projectid_406014/images/tild3232-3636-4061-b065-323862666465__960.jpg  alt="kassa">
+            <h3>Администратор</h3>
+        </div>
+    </section>
+
+    <section id="booking">
+        <h2>КОНТАКТ</h2>
+        <form id="bookingForm">
+            <label for="name">Имя</label>
+            <input type="text" id="name" name="name" required>
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required>
+            <label for="destination">Какой работа</label>
+            <select id="destination" name="destination" required>
+                <option value="paris">Официант</option>
+                <option value="hawaii">Повар</option>
+                <option value="tokyo">Касса</option>
+                <option value="tokyo">Уборщик</option>
+                <option value="tokyo">Диспетчер</option>
+                <option value="tokyo">Администратор</option>
+            </select>
+            <button type="submit">Кнопка</button>
+        </form>
+    </section>
+
+    <section id="contact">
+        <h2>Наш номер</h2>
+        <p>Email: baatyrovbajys@gmail.com</p>
+        <p>Телефон: +996557631771</p>
+    </section>
+
+    <footer>
+        <p>&copy; 2024 Ваканции КЫРГЫЗСТАН</p>
+    </footer>
+
+    <script src="in.js"></script>
+</body>
+</html>
