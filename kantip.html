@@ -1,0 +1,367 @@
+<title>Кантип?</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Unbounded:wght@500;700&display=swap">
+<style>
+/* Layout: a civic handbook — search first, then topics; each guide is a checklist + ordered steps */
+:root{
+  --bg:#f7f5f1; --surface:#ffffff; --ink:#1d1a17; --muted:#6b635a; --line:#e5dfd6;
+  --accent:#c4122f; --accent-ink:#ffffff; --sun:#f2b705; --sun-soft:#fdf3d2; --ok:#1f7a4d;
+  --display:"Unbounded", "Inter", system-ui, sans-serif;
+  --body:"Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --r:12px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#161311; --surface:#211d1a; --ink:#f2ede6; --muted:#a79d92; --line:#36302a;
+  --accent:#ff5468; --accent-ink:#1a0306; --sun:#f5c53a; --sun-soft:#3a2f12; --ok:#4cc38a; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#161311; --surface:#211d1a; --ink:#f2ede6; --muted:#a79d92; --line:#36302a;
+  --accent:#ff5468; --accent-ink:#1a0306; --sun:#f5c53a; --sun-soft:#3a2f12; --ok:#4cc38a; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.55}
+.wrap{max-width:960px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+a{color:var(--accent)}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;line-height:1.2;margin:0}
+button,input{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--sun);outline-offset:2px;border-radius:6px}
+
+header.top{border-bottom:1px solid var(--line);background:var(--surface)}
+header.top .wrap{display:flex;align-items:center;gap:12px;padding-block:14px}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink)}
+.logo b{font-family:var(--display);font-size:20px}
+.logo small{color:var(--muted);font-size:13px}
+
+.hero{padding-block:40px 28px}
+.hero h1{font-size:clamp(28px,5vw,44px);max-width:18ch}
+.hero h1 em{font-style:normal;color:var(--accent)}
+.hero p{color:var(--muted);max-width:60ch;margin:12px 0 22px}
+.search{display:flex;align-items:center;gap:10px;background:var(--surface);border:2px solid var(--line);border-radius:14px;padding:6px 6px 6px 16px;max-width:640px}
+.search:focus-within{border-color:var(--accent)}
+.search input{flex:1;min-width:0;border:0;background:transparent;font-size:17px;padding:10px 0;outline:none}
+.search button{border:0;background:var(--accent);color:var(--accent-ink);border-radius:10px;padding:10px 16px;font-weight:600;cursor:pointer}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.chip{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 12px;font-size:14px;cursor:pointer}
+.chip:hover{border-color:var(--accent)}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+
+section{padding-block:12px 28px}
+.sec-h{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:14px;flex-wrap:wrap}
+.sec-h h2{font-size:20px}
+.sec-h span{color:var(--muted);font-size:14px}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+.card{display:flex;flex-direction:column;gap:6px;text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px;cursor:pointer;text-decoration:none;color:var(--ink);min-width:0}
+.card:hover{border-color:var(--accent)}
+.card .cat{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.card h3{font-family:var(--body);font-size:17px;font-weight:700}
+.card p{margin:0;color:var(--muted);font-size:14px}
+.empty{color:var(--muted);padding:20px;border:1px dashed var(--line);border-radius:var(--r)}
+
+.pin{background:var(--sun-soft);border-radius:var(--r);padding:20px;display:grid;gap:12px}
+.pin h2{font-size:18px}
+.pin p{margin:0;color:var(--muted);font-size:14px}
+.pin-row{display:flex;gap:10px;flex-wrap:wrap}
+.pin input{flex:1;min-width:0;max-width:320px;border:2px solid var(--line);background:var(--surface);border-radius:10px;padding:10px 12px;font-variant-numeric:tabular-nums;letter-spacing:.08em;font-size:17px}
+.pin-out{font-size:15px}
+.pin-digits{display:flex;flex-wrap:wrap;gap:4px;font-variant-numeric:tabular-nums;font-weight:700}
+.pin-digits span{padding:4px 7px;border-radius:6px;background:var(--surface)}
+.pin-digits .g{background:var(--accent);color:var(--accent-ink)}
+.pin-digits .d{background:var(--sun);color:#1d1a17}
+
+/* guide view */
+.back{display:inline-flex;gap:6px;align-items:center;margin-block:20px 8px;background:none;border:0;color:var(--accent);cursor:pointer;font-weight:600;padding:0}
+.g-head h1{font-size:clamp(24px,4vw,34px)}
+.g-head p{color:var(--muted);max-width:65ch}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;margin-block:18px}
+.facts div{background:var(--surface);padding:12px 14px;min-width:0}
+.facts dt{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.facts dd{margin:4px 0 0;font-weight:500}
+.cols{display:grid;grid-template-columns:1fr 1.2fr;gap:20px;align-items:start}
+@media (max-width:760px){.cols{grid-template-columns:1fr}}
+.box{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px;min-width:0}
+.box h2{font-size:17px;margin-bottom:10px}
+.progress{height:6px;border-radius:99px;background:var(--line);overflow:hidden;margin:4px 0 12px}
+.progress i{display:block;height:100%;background:var(--ok);width:0;transition:width .2s}
+.prog-label{font-size:13px;color:var(--muted)}
+.check{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-top:1px solid var(--line);cursor:pointer}
+.check:first-of-type{border-top:0}
+.check input{width:20px;height:20px;margin-top:2px;accent-color:var(--ok);flex:none}
+.check.done span{color:var(--muted);text-decoration:line-through}
+ol.steps{list-style:none;margin:0;padding:0;counter-reset:s;display:grid;gap:14px}
+ol.steps li{counter-increment:s;display:grid;grid-template-columns:32px 1fr;gap:12px}
+ol.steps li::before{content:counter(s);display:grid;place-items:center;width:32px;height:32px;border-radius:50%;background:var(--accent);color:var(--accent-ink);font-weight:700;font-size:14px}
+.tip{margin-top:18px;background:var(--sun-soft);border-radius:var(--r);padding:14px 16px}
+.tip b{display:block;margin-bottom:4px}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-block:18px}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:9px 14px;cursor:pointer;font-weight:600;text-decoration:none;color:var(--ink)}
+.btn:hover{border-color:var(--accent)}
+.related{margin-top:8px}
+
+footer{border-top:1px solid var(--line);margin-top:24px}
+footer .wrap{padding-block:20px;color:var(--muted);font-size:13px}
+.note{font-size:13px;color:var(--muted)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<header class="top"><div class="wrap">
+  <a class="logo" href="#" id="home-link" aria-label="Башкы бет">
+    <svg width="34" height="34" viewBox="0 0 40 40" aria-hidden="true">
+      <circle cx="20" cy="20" r="18" fill="var(--sun)"/>
+      <circle cx="20" cy="20" r="9" fill="none" stroke="var(--accent)" stroke-width="2.4"/>
+      <path d="M13.6 13.6 26.4 26.4M26.4 13.6 13.6 26.4M17 11.6 23 28.4M23 11.6 17 28.4" stroke="var(--accent)" stroke-width="2.2" stroke-linecap="round"/>
+    </svg>
+    <span><b>Кантип?</b><br><small>Документтер боюнча жол көрсөткүч</small></span>
+  </a>
+</div></header>
+
+<main id="app" class="wrap"></main>
+
+<footer><div class="wrap">
+  Бул сайт маалымат берүү үчүн гана. Мыйзамдар жана төлөмдөр өзгөрүп турат, ошондуктан барардан мурун расмий сайттан же Калкты тейлөө борборунан (КТБ/ЦОН) тактап алыңыз.
+</div></footer>
+
+<script>
+const CATS = {
+  docs:  "Жеке документтер",
+  family:"Үй-бүлө",
+  social:"Пенсия жана жөлөкпул",
+  biz:   "Иш жана бизнес",
+  prop:  "Мүлк жана мурас",
+  health:"Ден соолук"
+};
+
+const G = [
+{id:"id-karta",cat:"docs",title:"ID-карта (паспорт) алуу же алмаштыруу",
+ sum:"Кыргызстандын жалпы жарандык паспорту. 16 жаштан баштап милдеттүү.",
+ kw:"паспорт айди id карта жалпы жарандык алмаштыруу жоготуп",
+ where:"Калкты тейлөө борбору (КТБ / ЦОН)",cost:"Мөөнөтүнө жараша: тез даярдоо кымбатыраак",time:"Кадимки же тездетилген тартипте",
+ docs:["Туулгандыгы тууралуу күбөлүк (биринчи жолу алганда)","Эски паспорт (алмаштырганда)","Мамлекеттик алым төлөнгөн квитанция","16 жашка чейинки балага: ата-эненин биринин паспорту","Эркектерге: аскердик каттоо документи (талап кылынса)"],
+ steps:["Жакынкы КТБны тандаңыз. Алдын ала кезекке жазылсаңыз, убакыт үнөмдөлөт.","Документтерди тапшырып, арыз толтурасыз.","Сүрөтүңүздү жана манжа издериңизди ошол жерде алышат.","Алымды төлөйсүз (КТБдагы терминалдан же банктан).","Паспорт даяр болгондо, белгиленген күнү барып аласыз."],
+ tip:"Паспортуңузду жоготуп алсаңыз, аны КТБга жарыяласаңыз болот. Ошондо башка бирөө аны колдоно албайт.",
+ link:["Мамлекеттик каттоо кызматы","https://grs.gov.kg"]},
+{id:"zagran",cat:"docs",title:"Чет өлкөгө чыгуучу паспорт",
+ sum:"Чет өлкөгө сапар, окуу же жумуш үчүн керек болгон паспорт.",
+ kw:"загран загранпаспорт чет өлкө сапар виза паспорт",
+ where:"Калкты тейлөө борбору (КТБ / ЦОН)",cost:"Мөөнөтүнө жараша өзгөрөт",time:"Кадимки же тездетилген тартипте",
+ docs:["ID-карта","Мамлекеттик алым төлөнгөн квитанция","Балага: туулгандыгы тууралуу күбөлүк жана ата-эненин паспорттору","18–27 жаштагы эркектерге: аскердик билет же катталуу күбөлүгү"],
+ steps:["КТБга кезекке жазылыңыз.","Документтерди тапшырып, арыз толтурасыз.","Сүрөт жана манжа издерин ошол жерде алышат.","Алымды төлөйсүз.","Даяр болгондо барып, паспортту өзүңүз аласыз."],
+ tip:"Сапардын күнүнө чейин эрте тапшырыңыз. Тез даярдоо кымбатыраак турат.",
+ link:["Мамлекеттик каттоо кызматы","https://grs.gov.kg"]},
+{id:"propiska",cat:"docs",title:"Жашаган жер боюнча катталуу (прописка)",
+ sum:"Бала бакча, мектеп, жөлөкпул, шайлоо жана башка кызматтар үчүн көп учурда талап кылынат.",
+ kw:"прописка каттоо жашаган жер регистрация адрес",
+ where:"Калкты тейлөө борбору (КТБ / ЦОН)",cost:"Алым болушу мүмкүн, КТБдан тактаңыз",time:"Адатта тез",
+ docs:["ID-карта","Үйгө болгон укукту тастыктаган документ (мамлекеттик акт, келишим ж.б.)","Үй сизге таандык болбосо: үй ээсинин макулдугу","Арыз (ошол жерде толтурулат)"],
+ steps:["Үй сизге таандык болбосо, ээсин ала барыңыз же анын макулдугун алдын ала даярдаңыз.","КТБга документтерди тапшырасыз.","Каттоо маалымат базасына киргизилет."],
+ tip:"Ижарадагы үйгө да убактылуу катталса болот. Бул тууралуу үй ээси менен алдын ала сүйлөшүп алыңыз."},
+{id:"tuulgan",cat:"family",title:"Балага туулгандыгы тууралуу күбөлүк алуу",
+ sum:"Баланын биринчи документи. Ансыз жөлөкпул, ID-карта жана бала бакчага кезек алынбайт.",
+ kw:"туулгандыгы тууралуу күбөлүк свидетельство о рождении бала төрөлдү метрика",
+ where:"Жарандык абалдын актыларын каттоо (ЖААК / ЗАГС) бөлүмү же КТБ",cost:"Адатта акысыз же аз алым",time:"Адатта ошол эле күнү",
+ docs:["Төрөтканадан берилген медициналык маалымкат","Ата-эненин паспорттору","Никенин күбөлүгү (бар болсо)","Нике катталбаса: аталыкты аныктоо боюнча биргелешкен арыз"],
+ steps:["Төрөтканадан медициналык маалымкатты алыңыз.","Ата-эненин бири же экөө тең ЖААК бөлүмүнө же КТБга барат.","Арыз толтуруп, баланын атын жазасыз.","Күбөлүктү аласыз. Андагы маалыматтарды дароо текшериңиз."],
+ tip:"Күбөлүктү алар замат аты-жөнүндөгү жазууларды текшериңиз. Катаны кийин оңдотуу көбүрөөк убакыт талап кылат."},
+{id:"nike",cat:"family",title:"Нике каттоо",
+ sum:"Мыйзамдуу нике ЖААКта гана катталат. Мүлк, мурас жана балдардын укуктары ушуга байланыштуу.",
+ kw:"нике каттоо загс үйлөнүү турмушка чыгуу брак никах",
+ where:"ЖААК (ЗАГС) бөлүмү",cost:"Мамлекеттик алым",time:"Арыз бергенден кийин белгиленген күнү",
+ docs:["Эки тараптын тең паспорттору","Биргелешкен арыз","Алым төлөнгөн квитанция","Мурда никеде болсоңуз: ажырашуу күбөлүгү"],
+ steps:["Экөөңүз тең ЖААК бөлүмүнө барып арыз бересиз.","Каттоо күнү белгиленет.","Белгиленген күнү никени каттап, күбөлүк аласыз."],
+ tip:"Мечитте нике кыйылганы мыйзам боюнча катталган нике болуп эсептелбейт. Мүлккө жана алиментке болгон укуктарыңызды коргоо үчүн никени ЖААКта да каттаңыз."},
+{id:"ajyrashuu",cat:"family",title:"Ажырашуу",
+ sum:"Эки тарап макул болуп, жашы жете элек балдар жок болсо ЖААКта, калган учурларда сот аркылуу.",
+ kw:"ажырашуу развод нике бузуу алимент",
+ where:"ЖААК (ЗАГС) бөлүмү же сот",cost:"Мамлекеттик алым",time:"Жолуна жараша",
+ docs:["Арыз (ЖААКта) же доо арыз (сотто)","Эки тараптын паспорттору","Никенин күбөлүгү","Балдар болсо: алардын туулгандыгы тууралуу күбөлүктөрү","Алым төлөнгөн квитанция"],
+ steps:["Кайсы жол туура келерин аныктаңыз: ЖААК же сот.","ЖААК: экөөңүз биргелешип арыз бересиз.","Сот: доо арыз бересиз. Балдар ким менен калары жана алимент да ошол жерде чечилет.","Чечим чыккандан кийин ажырашуу тууралуу күбөлүк аласыз."],
+ tip:"Балдар болсо, алимент жана алардын жашаган жери тууралуу маселени юрист менен алдын ала сүйлөшүп алыңыз. Мамлекеттик акысыз юридикалык жардам дагы бар."},
+{id:"pensiya",cat:"social",title:"Пенсияга чыгуу",
+ sum:"Жалпы тартипте эркектер 63, аялдар 58 жашта пенсияга чыгат. Документтерди алдын ала даярдаган жакшы.",
+ kw:"пенсия пенсияга чыгуу соцфонд социалдык фонд стаж",
+ where:"Социалдык фонддун райондук бөлүмү",cost:"Акысыз",time:"Арыз берилгенден кийин дайындалат",
+ docs:["ID-карта","Эмгек китепчеси","Эмгек стажын тастыктаган маалымкаттар","Айлык акы тууралуу маалымкаттар (талап кылынса)","Банк эсебинин реквизиттери"],
+ steps:["Пенсиялык жашка бир нече ай калганда эмгек китепчеңизди текшериңиз.","Жетишпеген маалымкаттарды мурдагы иш орундарынан же архивден алыңыз.","Социалдык фонддун бөлүмүнө арыз бересиз.","Стаж эсептелип, пенсиянын өлчөмү дайындалат."],
+ tip:"Эмгек китепчесиндеги каталар пенсия чыгарууну кечиктирет. Ишкана жабылып калган болсо, маалымкатты мамлекеттик архивден сураңыз.",
+ link:["Социалдык фонд","https://socfond.kg"]},
+{id:"komok",cat:"social",title:"«Үй-бүлөгө көмөк» жөлөкпулу",
+ sum:"Аз камсыз болгон, балдары бар үй-бүлөлөргө мамлекет төлөп берген ай сайынкы жардам.",
+ kw:"жөлөкпул үй-бүлөгө көмөк пособие балдар жардам аз камсыз",
+ where:"Райондук социалдык өнүгүү бөлүмү",cost:"Акысыз",time:"Текшерүүдөн кийин чечим чыгат",
+ docs:["Ата-эненин паспорттору","Балдардын туулгандыгы тууралуу күбөлүктөрү","Үй-бүлөнүн курамы жана кирешеси тууралуу маалымкаттар","Жер участогу жана мал тууралуу маалымкат (айыл өкмөтүнөн)","Банк эсеби"],
+ steps:["Райондук социалдык өнүгүү бөлүмүнө барып, кеңеш алыңыз.","Маалымкаттарды чогултуп, арыз бересиз.","Социалдык кызматкер үй-бүлөнүн абалын текшериши мүмкүн.","Чечим чыгып, жөлөкпул банк эсебине которулат."],
+ tip:"Жөлөкпул белгилүү мөөнөткө дайындалат. Анын бүтүшүн көзөмөлдөп, убагында кайра тапшырыңыз."},
+{id:"ip",cat:"biz",title:"Жеке ишкер катары катталуу",
+ sum:"Өз ишиңизди мыйзамдуу ачуу үчүн. Патент же бирдиктүү салык тартибин тандайсыз.",
+ kw:"ип жеке ишкер бизнес патент салык каттоо ишкердик",
+ where:"Салык кызматынын райондук бөлүмү же онлайн",cost:"Каттоо адатта акысыз. Патенттин баасы иштин түрүнө жараша",time:"Адатта тез",
+ docs:["ID-карта","Арыз","Иштин түрү жана дареги"],
+ steps:["Эмне иш кыла турганыңызды аныктаңыз.","Салык тартибин тандаңыз: патент же бирдиктүү салык.","Салык кызматында же жеке кабинет аркылуу катталасыз.","Патентти сатып аласыз же отчетторду убагында тапшырып турасыз."],
+ tip:"Кээ бир иштерде кассалык аппарат (ККМ) талап кылынат. Иш баштаардан мурун тактап алыңыз.",
+ link:["Салык кызматы","https://sti.gov.kg"]},
+{id:"prava",cat:"docs",title:"Айдоочулук күбөлүк (права) алуу",
+ sum:"Автомектеп, медициналык комиссия жана эки экзамен.",
+ kw:"права айдоочулук күбөлүк водительские унаа экзамен автомектеп",
+ where:"Автомектеп, медициналык борбор жана Мамлекеттик каттоо кызматынын унаа бөлүмү",cost:"Окуу, медкомиссия жана алым үчүн төлөм",time:"Окуу бир нече айга созулат",
+ docs:["ID-карта","Автомектепти бүтүргөндүгү тууралуу күбөлүк","Айдоочулук медициналык маалымкат","Алым төлөнгөн квитанция"],
+ steps:["Автомектепте окуп бүтүрөсүз.","Медициналык комиссиядан өтүп, маалымкат аласыз.","Теориялык экзаменди тапшырасыз.","Практикалык экзаменди тапшырасыз.","Айдоочулук күбөлүктү аласыз."],
+ tip:"Теориялык экзаменге даярдануу үчүн расмий суроолор менен машыгыңыз.",
+ link:["Мамлекеттик каттоо кызматы","https://grs.gov.kg"]},
+{id:"polis",cat:"health",title:"Медициналык полис (ММК) алуу",
+ sum:"Расмий иштебеген адамдар үчүн. Полис менен дарылануу арзаныраак болот, дарыларга жеңилдик берилет.",
+ kw:"полис омс медициналык камсыздандыруу оорукана дары жеңилдик",
+ where:"Милдеттүү медициналык камсыздандыруу фондунун бөлүмү",cost:"Жылдык төлөм",time:"Адатта ошол эле күнү",
+ docs:["ID-карта","Төлөм"],
+ steps:["Расмий иштесеңиз, сизди иш берүүчүңүз камсыздандырат, полис сатып алуунун кереги жок.","Иштебесеңиз, ФОМСтун бөлүмүнө барып полис сатып аласыз.","Полисти үй-бүлөлүк дарыгериңизге (ҮМБ/ЦСМ) көрсөтөсүз."],
+ tip:"Балдар жана пенсионерлер сыяктуу айрым категориялар мамлекеттин эсебинен камсыздандырылган. Өзүңүздүн категорияңызды ҮМБдан тактаңыз.",
+ link:["Медициналык камсыздандыруу фонду","https://foms.kg"]},
+{id:"muras",cat:"prop",title:"Мурас алуу",
+ sum:"Мурас ачылгандан кийин 6 айдын ичинде нотариуска кайрылуу керек.",
+ kw:"мурас наследство нотариус үй жер каза болгон",
+ where:"Нотариус (мархумдун акыркы жашаган жери боюнча)",cost:"Нотариустун кызмат акысы жана алым",time:"Мурас ачылгандан кийин 6 ай күтүлөт",
+ docs:["Мурасчынын паспорту","Каза болгондугу тууралуу күбөлүк","Туугандыкты тастыктаган документтер (туулгандыгы, никеси тууралуу күбөлүктөр)","Мүлккө болгон документтер","Мархумдун акыркы жашаган жери тууралуу маалымкат"],
+ steps:["6 айдын ичинде нотариуска арыз бересиз.","Нотариус мурасчылардын баарын аныктайт.","6 ай өткөндөн кийин мурас укугу тууралуу күбөлүк аласыз.","Үй же жер болсо, аны КТБда өз атыңызга каттатасыз."],
+ tip:"6 айлык мөөнөттү өткөрүп жиберсеңиз, сот аркылуу калыбына келтирүүгө туура келет. Мөөнөттү өткөрбөңүз."}
+];
+
+const POPULAR = ["паспорт","прописка","пенсия","нике","жөлөкпул","права"];
+const app = document.getElementById("app");
+let state = {q:"", cat:null};
+
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const norm = s => s.toLowerCase().replace(/ё/g,"е");
+function store(k,v){try{ if(v===undefined) return JSON.parse(localStorage.getItem(k)||"null"); localStorage.setItem(k,JSON.stringify(v)); }catch(e){ return null; }}
+
+function match(g){
+  if(state.cat && g.cat!==state.cat) return false;
+  if(!state.q) return true;
+  const hay = norm(g.title+" "+g.sum+" "+g.kw);
+  return norm(state.q).split(/\s+/).filter(Boolean).every(w => hay.includes(w));
+}
+
+function card(g){
+  return `<a class="card" href="#g-${g.id}"><span class="cat">${esc(CATS[g.cat])}</span><h3>${esc(g.title)}</h3><p>${esc(g.sum)}</p></a>`;
+}
+
+function renderHome(){
+  app.innerHTML = `
+  <div class="hero">
+    <h1>Документ керекпи? <em>Кантип</em> аларыңызды кадам-кадамы менен түшүндүрөбүз.</h1>
+    <p>Кайда барыш керек, кайсы кагаздарды алып барыш керек жана кайсы кадамдан баштоо керек, баары бир жерде.</p>
+    <form class="search" id="sf" role="search">
+      <input id="q" type="search" placeholder="Мисалы: паспорт, пенсия, прописка" aria-label="Издөө" value="${esc(state.q)}">
+      <button type="submit">Издөө</button>
+    </form>
+    <div class="chips" aria-label="Көп изделгендер">${POPULAR.map(p=>`<button class="chip" data-q="${esc(p)}">${esc(p)}</button>`).join("")}</div>
+  </div>
+  <section>
+    <div class="sec-h"><h2>Темалар</h2><span id="count"></span></div>
+    <div class="chips" id="cats" style="margin:0 0 14px">
+      <button class="chip" data-cat="" aria-pressed="${!state.cat}">Баары</button>
+      ${Object.entries(CATS).map(([k,v])=>`<button class="chip" data-cat="${k}" aria-pressed="${state.cat===k}">${esc(v)}</button>`).join("")}
+    </div>
+    <div class="grid" id="list"></div>
+  </section>
+  <section>
+    <div class="pin">
+      <h2>ПИНиңизде эмне жазылган?</h2>
+      <p>ID-картадагы 14 сандуу жеке номер (ПИН) салык, банк жана мамлекеттик кызматтарда сурала берет. Номериңизди киргизсеңиз, анын эмнени билдирерин көрсөтөбүз. Номер эч жакка жөнөтүлбөйт.</p>
+      <div class="pin-row"><input id="pin" inputmode="numeric" maxlength="14" placeholder="2 15 03 1990 00000" aria-label="ПИН" autocomplete="off"></div>
+      <div class="pin-out" id="pinout" aria-live="polite"></div>
+    </div>
+  </section>`;
+  drawList();
+  const q = document.getElementById("q");
+  document.getElementById("sf").addEventListener("submit", e=>{e.preventDefault(); state.q=q.value.trim(); drawList();});
+  q.addEventListener("input", ()=>{state.q=q.value.trim(); drawList();});
+  app.querySelectorAll("[data-q]").forEach(b=>b.addEventListener("click",()=>{q.value=b.dataset.q; state.q=b.dataset.q; drawList(); document.getElementById("list").scrollIntoView({behavior:"smooth",block:"start"});}));
+  app.querySelectorAll("[data-cat]").forEach(b=>b.addEventListener("click",()=>{state.cat=b.dataset.cat||null; app.querySelectorAll("[data-cat]").forEach(x=>x.setAttribute("aria-pressed", String((x.dataset.cat||null)===state.cat))); drawList();}));
+  const pin = document.getElementById("pin");
+  pin.addEventListener("input", ()=>{pin.value=pin.value.replace(/\D/g,"").slice(0,14); drawPin(pin.value);});
+  drawPin("21503199000000", true);
+}
+
+function drawList(){
+  const items = G.filter(match);
+  document.getElementById("count").textContent = items.length + " жол көрсөткүч";
+  document.getElementById("list").innerHTML = items.length ? items.map(card).join("") :
+    `<div class="empty">«${esc(state.q)}» боюнча азырынча эч нерсе табылган жок. Башка сөз менен издеп көрүңүз же жогорудагы темалардан тандаңыз.</div>`;
+}
+
+function drawPin(v, sample){
+  const out = document.getElementById("pinout");
+  if(!v){ out.innerHTML=""; return; }
+  const ds = v.split("").map((c,i)=>`<span class="${i===0?"g":(i<9?"d":"")}">${c}</span>`).join("");
+  let msg = "";
+  if(v.length<14){ msg = `<p class="note">Дагы ${14-v.length} сан калды.</p>`; }
+  else{
+    const g = v[0], d=v.slice(1,3), m=v.slice(3,5), y=v.slice(5,9);
+    const gender = g==="1"?"аял":g==="2"?"эркек":null;
+    const dt = new Date(+y, +m-1, +d);
+    const okDate = dt.getFullYear()==+y && dt.getMonth()==+m-1 && dt.getDate()==+d && +y>1900;
+    msg = gender && okDate
+      ? `<p><b>Жынысы:</b> ${gender} (биринчи сан). <b>Туулган күнү:</b> ${d}.${m}.${y} (2–9-сандар). Акыркы 5 сан – каттоо номери.</p>`
+      : `<p class="note">Бул номер кадимки ПИНдин түзүлүшүнө туура келбейт. Санды текшериңиз.</p>`;
+  }
+  out.innerHTML = `<div class="pin-digits">${ds}</div>${sample?'<p class="note">Мисал. Өзүңүздүн номериңизди киргизиңиз.</p>':""}${msg}`;
+}
+
+function renderGuide(g){
+  const key = "kantip-check-"+g.id;
+  const saved = store(key) || [];
+  const rel = G.filter(x=>x.cat===g.cat && x.id!==g.id).slice(0,3);
+  app.innerHTML = `
+  <button class="back" id="back">← Бардык жол көрсөткүчтөр</button>
+  <div class="g-head"><span class="note">${esc(CATS[g.cat])}</span><h1>${esc(g.title)}</h1><p>${esc(g.sum)}</p></div>
+  <dl class="facts">
+    <div><dt>Кайда</dt><dd>${esc(g.where)}</dd></div>
+    <div><dt>Төлөм</dt><dd>${esc(g.cost)}</dd></div>
+    <div><dt>Мөөнөт</dt><dd>${esc(g.time)}</dd></div>
+  </dl>
+  <div class="cols">
+    <div class="box">
+      <h2>Документтер</h2>
+      <div class="prog-label" id="pl"></div>
+      <div class="progress"><i id="pb"></i></div>
+      ${g.docs.map((d,i)=>`<label class="check${saved[i]?" done":""}"><input type="checkbox" id="c-${g.id}-${i}" data-i="${i}"${saved[i]?" checked":""}><span>${esc(d)}</span></label>`).join("")}
+      <p class="note">Белгилеп турсаңыз, эмнени даярдап койгонуңуз ушул түзмөктө сакталып калат.</p>
+    </div>
+    <div class="box">
+      <h2>Кадамдар</h2>
+      <ol class="steps">${g.steps.map(s=>`<li><span>${esc(s)}</span></li>`).join("")}</ol>
+      <div class="tip"><b>Кеңеш</b>${esc(g.tip)}</div>
+    </div>
+  </div>
+  <div class="actions">
+    <button class="btn" id="copy">Шилтемени көчүрүү</button>
+    ${g.link?`<a class="btn" href="${esc(g.link[1])}" target="_blank" rel="noopener">Расмий сайт: ${esc(g.link[0])} ↗</a>`:""}
+  </div>
+  ${rel.length?`<section class="related"><div class="sec-h"><h2>Ушул темадагы башка жол көрсөткүчтөр</h2></div><div class="grid">${rel.map(card).join("")}</div></section>`:""}`;
+  const boxes = [...app.querySelectorAll(".check input")];
+  const upd = ()=>{
+    const st = boxes.map(b=>b.checked); store(key, st);
+    const n = st.filter(Boolean).length;
+    document.getElementById("pl").textContent = `${n} / ${boxes.length} даяр`;
+    document.getElementById("pb").style.width = (n/boxes.length*100)+"%";
+    boxes.forEach(b=>b.parentElement.classList.toggle("done", b.checked));
+  };
+  boxes.forEach(b=>b.addEventListener("change", upd)); upd();
+  document.getElementById("back").addEventListener("click", ()=>{location.hash="";});
+  const cp = document.getElementById("copy");
+  cp.addEventListener("click", ()=>{
+    const url = location.href;
+    navigator.clipboard?.writeText(url).then(()=>{cp.textContent="Көчүрүлдү";}).catch(()=>{cp.textContent=url;});
+    setTimeout(()=>{cp.textContent="Шилтемени көчүрүү";}, 2500);
+  });
+  window.scrollTo(0,0);
+}
+
+function route(){
+  const h = location.hash.replace("#","");
+  const g = h.startsWith("g-") && G.find(x=>x.id===h.slice(2));
+  g ? renderGuide(g) : renderHome();
+}
+document.getElementById("home-link").addEventListener("click", e=>{e.preventDefault(); location.hash="";});
+window.addEventListener("hashchange", route);
+route();
+</script>

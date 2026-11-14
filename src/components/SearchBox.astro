@@ -1,0 +1,90 @@
+---
+interface Props { value?: string; large?: boolean; autofocus?: boolean }
+const { value = '', large = false, autofocus = false } = Astro.props;
+---
+<form class:list={['search', { large }]} action="/izdoo/" method="get" role="search" data-search>
+  <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" class="ico">
+    <circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2" />
+    <path d="m20 20-4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+  </svg>
+  <label class="visually-hidden" for="q">Эмне издейсиз?</label>
+  <input
+    id="q" name="q" type="search" value={value} autocomplete="off" autofocus={autofocus}
+    placeholder="Мисалы: паспорт, пенсия, прописка"
+    aria-controls="search-suggest" aria-expanded="false" role="combobox" aria-autocomplete="list"
+  />
+  <button type="submit" class="btn btn-primary">Издөө</button>
+  <ul id="search-suggest" class="suggest" role="listbox" hidden></ul>
+</form>
+
+<script>
+  import { loadIndex, search } from '../scripts/search';
+
+  document.querySelectorAll<HTMLFormElement>('[data-search]').forEach((form) => {
+    const input = form.querySelector('input')!;
+    const list = form.querySelector<HTMLUListElement>('.suggest')!;
+    let active = -1;
+
+    const close = () => { list.hidden = true; input.setAttribute('aria-expanded', 'false'); active = -1; };
+    const highlight = () => {
+      [...list.children].forEach((li, i) => li.setAttribute('aria-selected', String(i === active)));
+    };
+
+    input.addEventListener('input', async () => {
+      const q = input.value.trim();
+      if (q.length < 2) return close();
+      const res = search(await loadIndex(), q).slice(0, 6);
+      list.innerHTML = res.length
+        ? res.map((r) => `<li role="option"><a href="/jol/${r.id}/"><b></b><span></span></a></li>`).join('')
+        : `<li class="none">Эч нерсе табылган жок. Башка сөз менен издеп көрүңүз.</li>`;
+      res.forEach((r, i) => {
+        const li = list.children[i];
+        li.querySelector('b')!.textContent = r.title;
+        li.querySelector('span')!.textContent = r.category;
+      });
+      list.hidden = false;
+      input.setAttribute('aria-expanded', 'true');
+      active = -1;
+    });
+
+    input.addEventListener('keydown', (e) => {
+      const links = list.querySelectorAll('a');
+      if (list.hidden || !links.length) return;
+      if (e.key === 'ArrowDown') { e.preventDefault(); active = (active + 1) % links.length; highlight(); }
+      else if (e.key === 'ArrowUp') { e.preventDefault(); active = (active - 1 + links.length) % links.length; highlight(); }
+      else if (e.key === 'Enter' && active >= 0) { e.preventDefault(); links[active].click(); }
+      else if (e.key === 'Escape') close();
+    });
+
+    document.addEventListener('click', (e) => { if (!form.contains(e.target as Node)) close(); });
+  });
+</script>
+
+<style>
+  .search {
+    position: relative; display: flex; align-items: center; gap: 10px;
+    background: var(--surface); border: 2px solid var(--line); border-radius: 16px;
+    padding: 6px 6px 6px 14px; max-width: 680px; box-shadow: var(--shadow);
+  }
+  .search:focus-within { border-color: var(--accent); }
+  .ico { color: var(--muted); flex: none; }
+  input { flex: 1; min-width: 0; border: 0; background: transparent; padding: 10px 0; outline: none; font-size: 1.05rem; }
+  input::-webkit-search-cancel-button { cursor: pointer; }
+  .large input { font-size: 1.15rem; padding: 12px 0; }
+  .suggest {
+    position: absolute; left: 0; right: 0; top: calc(100% + 6px); z-index: 30;
+    list-style: none; margin: 0; padding: 6px; background: var(--surface);
+    border: 1px solid var(--line); border-radius: var(--r); box-shadow: var(--shadow);
+  }
+  .suggest :global(a) {
+    display: flex; justify-content: space-between; gap: 12px; padding: 10px 12px; border-radius: 8px;
+    text-decoration: none; color: var(--ink);
+  }
+  .suggest :global(a span) { color: var(--muted); font-size: 0.82rem; white-space: nowrap; }
+  .suggest :global(li[aria-selected='true'] a), .suggest :global(a:hover) { background: var(--surface-2); }
+  .suggest :global(.none) { padding: 10px 12px; color: var(--muted); }
+  @media (max-width: 480px) {
+    .suggest :global(a) { flex-direction: column; gap: 0; }
+    .btn { padding-inline: 12px; }
+  }
+</style>

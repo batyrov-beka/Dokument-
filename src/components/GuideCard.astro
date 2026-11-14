@@ -1,0 +1,26 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { categoryById } from '../data/categories';
+interface Props { guide: CollectionEntry<'guides'>; showCategory?: boolean }
+const { guide, showCategory = true } = Astro.props;
+const d = guide.data;
+---
+<a class="card" href={`/jol/${guide.id}/`}>
+  {showCategory && <span class="eyebrow">{categoryById(d.category).title}</span>}
+  <h3>{d.title}</h3>
+  <p>{d.summary}</p>
+  <span class="meta">{d.documents.length} документ · {d.steps.length} кадам</span>
+</a>
+
+<style>
+  .card {
+    display: flex; flex-direction: column; gap: 6px;
+    background: var(--surface); border: 1px solid var(--line); border-radius: var(--r);
+    padding: 18px; text-decoration: none; color: var(--ink); min-width: 0;
+    transition: border-color 0.15s, transform 0.15s;
+  }
+  .card:hover { border-color: var(--accent); color: var(--ink); transform: translateY(-2px); }
+  h3 { font-size: 1.05rem; font-weight: 700; }
+  p { color: var(--muted); font-size: 0.92rem; flex: 1; }
+  .meta { font-size: 0.8rem; color: var(--muted); font-variant-numeric: tabular-nums; margin-top: 4px; }
+</style>

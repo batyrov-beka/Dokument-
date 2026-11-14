@@ -1,0 +1,63 @@
+---
+interface Props { compact?: boolean }
+const { compact = false } = Astro.props;
+---
+<div class:list={['pin', { compact }]} data-pin>
+  <label for="pin-input" class="lbl">ПИН (14 сан)</label>
+  <input id="pin-input" inputmode="numeric" maxlength="14" autocomplete="off" placeholder="21503199000000" />
+  <div class="digits" aria-hidden="true"></div>
+  <p class="out" aria-live="polite"></p>
+  <p class="muted small">Номериңиз ушул түзмөктөн эч жакка жөнөтүлбөйт.</p>
+</div>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-pin]').forEach((root) => {
+    const input = root.querySelector('input')!;
+    const digits = root.querySelector<HTMLElement>('.digits')!;
+    const out = root.querySelector<HTMLElement>('.out')!;
+
+    const draw = (v: string, sample = false) => {
+      const shown = v || '';
+      digits.innerHTML = Array.from({ length: 14 }, (_, i) => {
+        const c = shown[i] ?? '·';
+        const cls = i === 0 ? 'g' : i < 9 ? 'd' : 'n';
+        return `<span class="${cls}${shown[i] ? '' : ' empty'}">${c}</span>`;
+      }).join('');
+      if (!v) { out.textContent = ''; return; }
+      if (v.length < 14) { out.textContent = `Дагы ${14 - v.length} сан калды.`; return; }
+      const g = v[0], d = v.slice(1, 3), m = v.slice(3, 5), y = v.slice(5, 9);
+      const gender = g === '1' ? 'аял' : g === '2' ? 'эркек' : null;
+      const dt = new Date(+y, +m - 1, +d);
+      const ok = dt.getFullYear() === +y && dt.getMonth() === +m - 1 && dt.getDate() === +d && +y > 1900 && dt <= new Date();
+      out.innerHTML = gender && ok
+        ? `${sample ? '<em>Мисал:</em> ' : ''}<b>Жынысы:</b> ${gender} · <b>Туулган күнү:</b> ${d}.${m}.${y} · акыркы 5 сан – каттоо номери.`
+        : 'Бул номер ПИНдин кадимки түзүлүшүнө туура келбейт. Санды текшериңиз.';
+    };
+
+    input.addEventListener('input', () => {
+      input.value = input.value.replace(/\D/g, '').slice(0, 14);
+      draw(input.value);
+    });
+    draw('21503199000000', true);
+  });
+</script>
+
+<style>
+  .pin { display: grid; gap: 12px; }
+  .lbl { font-weight: 600; font-size: 0.9rem; }
+  input {
+    max-width: 340px; width: 100%; border: 2px solid var(--line); background: var(--surface);
+    border-radius: 10px; padding: 12px 14px; font-size: 1.15rem; letter-spacing: 0.12em;
+    font-variant-numeric: tabular-nums; outline: none;
+  }
+  input:focus { border-color: var(--accent); }
+  .digits { display: flex; flex-wrap: wrap; gap: 4px; font-variant-numeric: tabular-nums; font-weight: 700; }
+  .digits :global(span) {
+    width: 2em; text-align: center; padding: 6px 0; border-radius: 6px; background: var(--surface);
+    border: 1px solid var(--line);
+  }
+  .digits :global(.g) { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+  .digits :global(.d) { background: var(--sun); color: #1d1a17; border-color: var(--sun); }
+  .digits :global(.empty) { opacity: 0.45; }
+  .out { min-height: 1.6em; }
+</style>

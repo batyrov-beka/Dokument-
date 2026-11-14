@@ -1,0 +1,58 @@
+---
+import Logo from './Logo.astro';
+import { SITE } from '../data/site';
+const path = Astro.url.pathname;
+const links = [
+  { href: '/', label: 'Башкы бет' },
+  { href: '/temalar/', label: 'Темалар' },
+  { href: '/pin/', label: 'ПИН' },
+  { href: '/biz-jonundo/', label: 'Биз жөнүндө' },
+];
+const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWith(href));
+---
+<header class="site">
+  <div class="wrap bar">
+    <a class="brand" href="/" aria-label={`${SITE.name}, башкы бет`}>
+      <Logo />
+      <span>
+        <b>{SITE.name}</b>
+        <small>{SITE.tagline}</small>
+      </span>
+    </a>
+    <nav aria-label="Негизги меню">
+      <ul>
+        {links.map((l) => (
+          <li><a href={l.href} aria-current={isActive(l.href) ? 'page' : undefined}>{l.label}</a></li>
+        ))}
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<style>
+  .site {
+    background: var(--surface);
+    border-bottom: 1px solid var(--line);
+    position: sticky;
+    top: 0;
+    z-index: 20;
+  }
+  .bar { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-block: 12px; flex-wrap: wrap; }
+  .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--ink); }
+  .brand b { font-family: var(--display); font-size: 1.2rem; display: block; line-height: 1.1; }
+  .brand small { color: var(--muted); font-size: 0.8rem; }
+  nav ul { list-style: none; margin: 0; padding: 0; display: flex; gap: 4px; flex-wrap: wrap; }
+  nav a {
+    display: block; padding: 8px 12px; border-radius: 8px; text-decoration: none;
+    color: var(--ink); font-weight: 500; font-size: 0.95rem;
+  }
+  nav a:hover { background: var(--surface-2); color: var(--ink); }
+  nav a[aria-current='page'] { background: var(--ink); color: var(--bg); }
+  @media (max-width: 640px) {
+    .site { position: static; }
+    .brand small { display: none; }
+    nav { width: 100%; overflow-x: auto; }
+    nav ul { flex-wrap: nowrap; }
+    nav a { white-space: nowrap; }
+  }
+</style>

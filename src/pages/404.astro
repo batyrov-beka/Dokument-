@@ -1,0 +1,19 @@
+---
+import Base from '../layouts/Base.astro';
+import SearchBox from '../components/SearchBox.astro';
+---
+<Base title="Бет табылган жок" noindex>
+  <div class="wrap page">
+    <p class="code">404</p>
+    <h1>Мындай бет жок</h1>
+    <p class="muted">Шилтеме эскирип калган же дарек туура эмес терилген болушу мүмкүн. Керектүү нерсени издеп көрүңүз:</p>
+    <SearchBox />
+    <p><a href="/">Башкы бетке кайтуу</a></p>
+  </div>
+</Base>
+
+<style>
+  .page { padding-block: 56px; display: grid; gap: 16px; }
+  .code { font-family: var(--display); font-size: 3.5rem; color: var(--accent); line-height: 1; }
+  h1 { font-size: var(--step-3); }
+</style>

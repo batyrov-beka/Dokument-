@@ -1,0 +1,62 @@
+---
+interface Props { id: string; items: string[] }
+const { id, items } = Astro.props;
+---
+<div class="checklist" data-checklist={id}>
+  <div class="head">
+    <span class="count" aria-live="polite">0 / {items.length} даяр</span>
+    <button type="button" class="reset no-print" hidden>Тазалоо</button>
+  </div>
+  <div class="bar"><i></i></div>
+  <ul>
+    {items.map((it, i) => (
+      <li>
+        <label>
+          <input type="checkbox" id={`chk-${id}-${i}`} data-i={i} />
+          <span>{it}</span>
+        </label>
+      </li>
+    ))}
+  </ul>
+</div>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-checklist]').forEach((root) => {
+    const key = 'kantip:check:' + root.dataset.checklist;
+    const boxes = [...root.querySelectorAll<HTMLInputElement>('input[type=checkbox]')];
+    const count = root.querySelector<HTMLElement>('.count')!;
+    const bar = root.querySelector<HTMLElement>('.bar i')!;
+    const reset = root.querySelector<HTMLButtonElement>('.reset')!;
+
+    let saved: boolean[] = [];
+    try { saved = JSON.parse(localStorage.getItem(key) || '[]'); } catch {}
+    boxes.forEach((b, i) => (b.checked = !!saved[i]));
+
+    const update = (persist = true) => {
+      const st = boxes.map((b) => b.checked);
+      const n = st.filter(Boolean).length;
+      count.textContent = n === boxes.length ? `Баары даяр! Барсаңыз болот.` : `${n} / ${boxes.length} даяр`;
+      bar.style.width = `${(n / boxes.length) * 100}%`;
+      reset.hidden = n === 0;
+      root.classList.toggle('complete', n === boxes.length);
+      if (persist) try { localStorage.setItem(key, JSON.stringify(st)); } catch {}
+    };
+    boxes.forEach((b) => b.addEventListener('change', () => update()));
+    reset.addEventListener('click', () => { boxes.forEach((b) => (b.checked = false)); update(); });
+    update(false);
+  });
+</script>
+
+<style>
+  .head { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+  .count { font-size: 0.85rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .complete .count { color: var(--ok); font-weight: 600; }
+  .reset { background: none; border: 0; color: var(--muted); font-size: 0.85rem; cursor: pointer; text-decoration: underline; padding: 0; }
+  .bar { height: 6px; border-radius: 99px; background: var(--line); overflow: hidden; margin: 6px 0 8px; }
+  .bar i { display: block; height: 100%; width: 0; background: var(--ok); transition: width 0.25s; }
+  ul { list-style: none; margin: 0; padding: 0; }
+  li + li { border-top: 1px solid var(--line); }
+  label { display: flex; gap: 12px; align-items: flex-start; padding: 10px 0; cursor: pointer; }
+  input { width: 20px; height: 20px; margin-top: 2px; accent-color: var(--ok); flex: none; cursor: pointer; }
+  input:checked + span { color: var(--muted); text-decoration: line-through; }
+</style>

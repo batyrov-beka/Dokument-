@@ -1,0 +1,41 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import { CATEGORIES } from '../data/categories';
+
+const guides = (await getCollection('guides')).sort((a, b) => a.data.order - b.data.order);
+---
+<Base title="Бардык темалар" description="Бардык жол көрсөткүчтөр темалар боюнча.">
+  <div class="wrap">
+    <header class="head">
+      <h1>Бардык темалар</h1>
+      <p class="muted">Азырынча {guides.length} жол көрсөткүч бар. Жаңылары дайыма кошулуп турат.</p>
+    </header>
+    <div class="cols">
+      {CATEGORIES.map((c) => {
+        const list = guides.filter((g) => g.data.category === c.id);
+        return (
+          <section class="group">
+            <h2><a href={`/tema/${c.id}/`}>{c.title}</a></h2>
+            <ul>
+              {list.map((g) => <li><a href={`/jol/${g.id}/`}>{g.data.title}</a></li>)}
+            </ul>
+          </section>
+        );
+      })}
+    </div>
+  </div>
+</Base>
+
+<style>
+  .head { padding-block: 32px 20px; display: grid; gap: 8px; }
+  .head h1 { font-size: var(--step-3); }
+  .cols { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: 16px; }
+  .group { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 20px; }
+  .group h2 { font-size: 1.05rem; margin-bottom: 10px; }
+  .group h2 a { color: var(--ink); text-decoration: none; }
+  .group h2 a:hover { color: var(--accent); }
+  ul { margin: 0; padding-left: 1.1em; display: grid; gap: 6px; }
+  li a { color: var(--ink); }
+  li a:hover { color: var(--accent); }
+</style>

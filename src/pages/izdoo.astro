@@ -1,0 +1,60 @@
+---
+import Base from '../layouts/Base.astro';
+import SearchBox from '../components/SearchBox.astro';
+---
+<Base title="Издөө" description="Жол көрсөткүчтөрдөн издөө." noindex>
+  <div class="wrap">
+    <header class="head">
+      <h1>Издөө</h1>
+      <SearchBox autofocus />
+    </header>
+    <p class="status muted" aria-live="polite"></p>
+    <div class="results grid"></div>
+    <p class="none muted" hidden>
+      Эч нерсе табылган жок. Башка сөз менен издеп көрүңүз же <a href="/temalar/">бардык темаларды</a> карап чыгыңыз.
+    </p>
+  </div>
+</Base>
+
+<script>
+  import { loadIndex, search } from '../scripts/search';
+  const q = new URLSearchParams(location.search).get('q')?.trim() ?? '';
+  const input = document.querySelector<HTMLInputElement>('#q')!;
+  const status = document.querySelector<HTMLElement>('.status')!;
+  const results = document.querySelector<HTMLElement>('.results')!;
+  const none = document.querySelector<HTMLElement>('.none')!;
+  input.value = q;
+
+  if (q) {
+    loadIndex().then((items) => {
+      const found = search(items, q);
+      status.textContent = `«${q}» боюнча ${found.length} жыйынтык табылды`;
+      none.hidden = found.length > 0;
+      results.replaceChildren(
+        ...found.map((r) => {
+          const a = document.createElement('a');
+          a.className = 'r';
+          a.href = `/jol/${r.id}/`;
+          a.innerHTML = '<span class="eyebrow"></span><h3></h3><p></p>';
+          a.querySelector('span')!.textContent = r.category;
+          a.querySelector('h3')!.textContent = r.title;
+          a.querySelector('p')!.textContent = r.summary;
+          return a;
+        }),
+      );
+    });
+  }
+</script>
+
+<style>
+  .head { padding-block: 32px 16px; display: grid; gap: 16px; }
+  .head h1 { font-size: var(--step-3); }
+  .status { margin-bottom: 14px; }
+  .results :global(.r) {
+    display: flex; flex-direction: column; gap: 6px; background: var(--surface); border: 1px solid var(--line);
+    border-radius: var(--r); padding: 18px; text-decoration: none; color: var(--ink);
+  }
+  .results :global(.r:hover) { border-color: var(--accent); }
+  .results :global(h3) { font-size: 1.05rem; }
+  .results :global(p) { color: var(--muted); font-size: 0.92rem; }
+</style>

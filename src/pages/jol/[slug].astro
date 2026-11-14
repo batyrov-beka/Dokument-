@@ -1,0 +1,190 @@
+---
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import Checklist from '../../components/Checklist.astro';
+import GuideCard from '../../components/GuideCard.astro';
+import { categoryById } from '../../data/categories';
+
+export async function getStaticPaths() {
+  const guides = await getCollection('guides');
+  return guides.map((guide) => ({ params: { slug: guide.id }, props: { guide, all: guides } }));
+}
+
+interface Props { guide: CollectionEntry<'guides'>; all: CollectionEntry<'guides'>[] }
+const { guide, all } = Astro.props;
+const d = guide.data;
+const cat = categoryById(d.category);
+const { Content } = await render(guide);
+const related = all.filter((g) => g.data.category === d.category && g.id !== guide.id).slice(0, 3);
+const updated = d.updated.toLocaleDateString('ky-KG', { year: 'numeric', month: 'long', day: 'numeric' });
+const url = new URL(Astro.url.pathname, Astro.site).href;
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'HowTo',
+    name: d.title,
+    description: d.summary,
+    inLanguage: 'ky',
+    supply: d.documents.map((x) => ({ '@type': 'HowToSupply', name: x })),
+    step: d.steps.map((s, i) => ({ '@type': 'HowToStep', position: i + 1, text: s })),
+    dateModified: d.updated.toISOString().slice(0, 10),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Башкы бет', item: new URL('/', Astro.site).href },
+      { '@type': 'ListItem', position: 2, name: cat.title, item: new URL(`/tema/${cat.id}/`, Astro.site).href },
+      { '@type': 'ListItem', position: 3, name: d.title, item: url },
+    ],
+  },
+  ...(d.faq.length
+    ? [{
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        mainEntity: d.faq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+      }]
+    : []),
+];
+---
+<Base title={d.title} description={d.summary} jsonLd={jsonLd}>
+  <article class="wrap">
+    <nav class="crumbs small" aria-label="Сиз турган жер">
+      <a href="/">Башкы бет</a><span aria-hidden="true">/</span>
+      <a href={`/tema/${cat.id}/`}>{cat.title}</a>
+    </nav>
+
+    <header class="g-head">
+      <h1>{d.title}</h1>
+      <p class="lead">{d.summary}</p>
+      <p class="small muted">Акыркы жолу жаңыланган күнү: <time datetime={d.updated.toISOString()}>{updated}</time></p>
+    </header>
+
+    <dl class="facts">
+      <div><dt class="eyebrow">Кайда</dt><dd>{d.where}</dd></div>
+      <div><dt class="eyebrow">Төлөм</dt><dd>{d.cost}</dd></div>
+      <div><dt class="eyebrow">Мөөнөт</dt><dd>{d.time}</dd></div>
+    </dl>
+
+    <div class="cols">
+      <section class="box" aria-labelledby="docs-h">
+        <h2 id="docs-h">Алып бара турган документтер</h2>
+        <p class="small muted hint">Даярдаганыңызды белгилеп турсаңыз, ушул түзмөктө сакталып калат.</p>
+        <Checklist id={guide.id} items={d.documents} />
+      </section>
+
+      <section class="box" aria-labelledby="steps-h">
+        <h2 id="steps-h">Кадам-кадамы менен</h2>
+        <ol class="steps">
+          {d.steps.map((s) => <li><span>{s}</span></li>)}
+        </ol>
+        {d.tip && (
+          <aside class="tip">
+            <b>Кеңеш</b>
+            <p>{d.tip}</p>
+          </aside>
+        )}
+      </section>
+    </div>
+
+    <div class="prose body"><Content /></div>
+
+    {d.faq.length > 0 && (
+      <section class="faq" aria-labelledby="faq-h">
+        <h2 id="faq-h">Көп берилүүчү суроолор</h2>
+        {d.faq.map((f) => (
+          <details>
+            <summary>{f.q}</summary>
+            <p>{f.a}</p>
+          </details>
+        ))}
+      </section>
+    )}
+
+    <div class="actions no-print">
+      <button type="button" class="btn" data-share>Бөлүшүү</button>
+      <button type="button" class="btn" data-print>Басып чыгаруу</button>
+      {d.official && (
+        <a class="btn" href={d.official.url} target="_blank" rel="noopener">Расмий сайт: {d.official.label} ↗</a>
+      )}
+    </div>
+
+    <p class="warn small">
+      Маалымат жалпы мүнөздө. Так талаптарды, төлөмдүн суммасын жана мөөнөттү барардан мурун тиешелүү мекемеден тактаңыз.
+    </p>
+
+    {related.length > 0 && (
+      <section class="section no-print">
+        <div class="section-head"><h2>Ушул темадагы башка жол көрсөткүчтөр</h2></div>
+        <div class="grid">{related.map((g) => <GuideCard guide={g} showCategory={false} />)}</div>
+      </section>
+    )}
+  </article>
+</Base>
+
+<script>
+  document.querySelector('[data-print]')?.addEventListener('click', () => window.print());
+  const share = document.querySelector<HTMLButtonElement>('[data-share]');
+  share?.addEventListener('click', async () => {
+    const data = { title: document.title, url: location.href };
+    try {
+      if (navigator.share) { await navigator.share(data); return; }
+      await navigator.clipboard.writeText(location.href);
+      share.textContent = 'Шилтеме көчүрүлдү';
+    } catch {
+      share.textContent = location.href;
+    }
+    setTimeout(() => (share.textContent = 'Бөлүшүү'), 2500);
+  });
+</script>
+
+<style>
+  .crumbs { display: flex; gap: 8px; flex-wrap: wrap; padding-top: 22px; color: var(--muted); }
+  .crumbs a { color: var(--muted); text-decoration: none; }
+  .crumbs a:hover { color: var(--accent); text-decoration: underline; }
+  .g-head { padding-block: 14px 6px; display: grid; gap: 10px; }
+  .g-head h1 { font-size: var(--step-3); max-width: 24ch; }
+  .lead { font-size: var(--step-1); color: var(--muted); max-width: 62ch; }
+
+  .facts {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; margin: 20px 0;
+    background: var(--line); border: 1px solid var(--line); border-radius: var(--r); overflow: hidden;
+  }
+  @media (max-width: 720px) { .facts { grid-template-columns: 1fr; } }
+  .facts div { background: var(--surface); padding: 14px 16px; min-width: 0; }
+  .facts dd { margin: 4px 0 0; font-weight: 500; }
+
+  .cols { display: grid; grid-template-columns: 1fr 1.15fr; gap: 20px; align-items: start; }
+  @media (max-width: 820px) { .cols { grid-template-columns: 1fr; } }
+  .box { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 20px; min-width: 0; }
+  .box h2 { font-size: 1.05rem; margin-bottom: 6px; }
+  .hint { margin-bottom: 10px; }
+
+  ol.steps { list-style: none; margin: 14px 0 0; padding: 0; counter-reset: s; display: grid; gap: 16px; }
+  ol.steps li { counter-increment: s; display: grid; grid-template-columns: 34px 1fr; gap: 12px; align-items: start; }
+  ol.steps li::before {
+    content: counter(s); display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%;
+    background: var(--accent); color: var(--accent-ink); font-weight: 700; font-size: 0.9rem;
+  }
+  ol.steps li span { padding-top: 5px; }
+  .tip { margin-top: 20px; background: var(--sun-soft); border-radius: var(--r-sm); padding: 14px 16px; }
+  .tip b { display: block; margin-bottom: 4px; }
+
+  .body:empty { display: none; }
+  .body { margin-top: 24px; }
+
+  .faq { margin-top: 28px; display: grid; gap: 8px; max-width: 760px; }
+  .faq h2 { font-size: var(--step-1); margin-bottom: 6px; }
+  details { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-sm); padding: 0 16px; }
+  summary { cursor: pointer; padding: 14px 0; font-weight: 600; }
+  details p { padding-bottom: 14px; color: var(--muted); }
+
+  .actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 24px; }
+  .warn { margin-top: 16px; color: var(--muted); max-width: 70ch; }
+
+  @media print {
+    .cols { grid-template-columns: 1fr; }
+    .box { border: 1px solid #ccc; break-inside: avoid; }
+  }
+</style>
